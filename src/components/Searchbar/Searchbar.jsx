@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import Notiflix from 'notiflix';
 
 import { CiSearch } from 'react-icons/ci';
@@ -8,57 +7,50 @@ import {
   SearchFormButton,
   SearchFormInput,
 } from './Searchbar.styled';
+import { useState } from 'react';
 
 Notiflix.Notify.init({
   position: 'right-top',
   timeout: 5000,
 });
 
-class Searchbar extends Component {
-  state = {
-    query: '',
+const SearchBarForm = ({ onSubmit }) => {
+  const [query, setQuery] = useState('');
+
+  const handleQueryChange = e => {
+    setQuery(e.target.value.toLowerCase());
   };
 
-  handleQueryChange = event => {
-    this.setState({ query: event.target.value.toLowerCase() });
-  };
-
-  handleFormSubmit = event => {
-    event.preventDefault();
-
-    const { query } = this.state;
+  const handleFormSubmit = e => {
+    e.preventDefault();
 
     if (query.trim() === '') {
       return Notiflix.Notify.failure('Enter something and try again.');
     }
 
-    this.props.onSubmit(query);
-    this.setState({ query: '' });
+    onSubmit(query);
+    setQuery('');
   };
 
-  render() {
-    const { query } = this.state;
+  return (
+    <SearchBar>
+      <SearchForm onSubmit={handleFormSubmit}>
+        <SearchFormButton type="submit">
+          <CiSearch /> Search
+        </SearchFormButton>
 
-    return (
-      <SearchBar>
-        <SearchForm onSubmit={this.handleFormSubmit}>
-          <SearchFormButton type="submit">
-            <CiSearch /> Search
-          </SearchFormButton>
+        <SearchFormInput
+          type="text"
+          name="query"
+          value={query}
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          onChange={handleQueryChange}
+        />
+      </SearchForm>
+    </SearchBar>
+  );
+};
 
-          <SearchFormInput
-            type="text"
-            name="query"
-            value={query}
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            onChange={this.handleQueryChange}
-          />
-        </SearchForm>
-      </SearchBar>
-    );
-  }
-}
-
-export default Searchbar;
+export default SearchBarForm;
